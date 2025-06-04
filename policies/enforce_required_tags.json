@@ -1,0 +1,13 @@
+{
+    "mode": "All",
+    "policyRule": {
+        "if": {
+            "allOf": [
+                {
+                    "field": "type",
+                    "equals": "Microsoft.Resources/subscriptions"
+                }
+            ]
+        }
+    }
+}
