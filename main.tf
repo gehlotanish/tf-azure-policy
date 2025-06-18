@@ -47,6 +47,7 @@ resource "azurerm_management_group_policy_assignment" "builtin_mg" {
   management_group_id  = data.azurerm_management_group.mg[each.value.scope_name].id
   display_name         = each.value.display_name
   description          = each.value.description
+  parameters           = each.value.parameters
 }
 
 resource "azurerm_subscription_policy_assignment" "builtin_sub" {
