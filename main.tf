@@ -48,6 +48,10 @@ resource "azurerm_management_group_policy_assignment" "builtin_mg" {
   display_name         = each.value.display_name
   description          = each.value.description
   parameters           = each.value.parameters
+  non_compliance_message {
+    content = each.value.non_compliance_message
+  }
+
 }
 
 resource "azurerm_subscription_policy_assignment" "builtin_sub" {
@@ -61,4 +65,8 @@ resource "azurerm_subscription_policy_assignment" "builtin_sub" {
   subscription_id      = local.subscriptions[each.value.scope_name]
   display_name         = each.value.display_name
   description          = each.value.description
+  parameters           = each.value.parameters
+  non_compliance_message {
+    content = each.value.non_compliance_message
+  }
 }

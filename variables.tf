@@ -13,13 +13,14 @@ Each object must include:
 DESC
 
   type = map(object({
-    policy_name     = string
-    assignment_name = string
-    scope_type      = string
-    scope_name      = string
-    display_name    = string
-    description     = string
-    parameters      = any
+    policy_name            = string
+    assignment_name        = string
+    scope_type             = string
+    scope_name             = string
+    display_name           = string
+    description            = string
+    parameters             = any
+    non_compliance_message = string
   }))
 
   default = {}
