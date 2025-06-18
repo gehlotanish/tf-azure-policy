@@ -1,5 +1,5 @@
 formatter: markdown table
-version: 0.18
+version: 0.20.0
 recursive:
   enabled: false
 content: |-

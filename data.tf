@@ -7,6 +7,6 @@ data "azurerm_management_group" "mg" {
 
 
 data "azurerm_policy_definition" "builtin" {
-  for_each = var.builtin_policies
-  display_name     = each.value.policy_name
+  for_each     = var.builtin_policies
+  display_name = each.value.policy_name
 }
