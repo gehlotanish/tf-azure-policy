@@ -23,7 +23,7 @@ module "policy" {
       description            = "Ensures all resources have a 'team' tag with a specified value"
       scope_type             = "management_group"
       scope_name             = "group1" # Replace with your MG name
-      non_compliance_message = "add `team` as tag"
+      non_compliance_message = "Resource is missing the required 'team' tag. Please add the 'team' tag with an approved value. Example: { \"team\": \"infosec\" }"
       parameters = jsonencode({
         tagName = {
           value = "team"

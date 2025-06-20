@@ -1,12 +1,13 @@
 resource "azurerm_policy_definition" "custom" {
   for_each     = var.custom_policies
-  name         = each.key
+  name         = each.value.name
   policy_type  = "Custom"
   mode         = each.value.mode
   display_name = each.value.display_name
   description  = each.value.description
   policy_rule  = each.value.policy_rule
   metadata     = each.value.metadata
+  parameters   = each.value.parameters
 }
 
 
@@ -21,6 +22,10 @@ resource "azurerm_management_group_policy_assignment" "custom_mg" {
   management_group_id  = data.azurerm_management_group.mg[each.value.scope_name].id
   display_name         = each.value.display_name
   description          = each.value.description
+  parameters           = each.value.parameters
+  non_compliance_message {
+    content = each.value.non_compliance_message
+  }
 }
 
 resource "azurerm_subscription_policy_assignment" "custom_sub" {
@@ -34,6 +39,10 @@ resource "azurerm_subscription_policy_assignment" "custom_sub" {
   subscription_id      = local.subscriptions[each.value.scope_name]
   display_name         = each.value.display_name
   description          = each.value.description
+  parameters           = each.value.parameters
+  non_compliance_message {
+    content = each.value.non_compliance_message
+  }
 }
 
 resource "azurerm_management_group_policy_assignment" "builtin_mg" {
@@ -51,7 +60,6 @@ resource "azurerm_management_group_policy_assignment" "builtin_mg" {
   non_compliance_message {
     content = each.value.non_compliance_message
   }
-
 }
 
 resource "azurerm_subscription_policy_assignment" "builtin_sub" {
