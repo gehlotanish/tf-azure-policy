@@ -27,6 +27,7 @@ DESC
     identity_type          = optional(string)
     identity_ids           = optional(list(string))
     not_scopes             = optional(list(string))
+    location               = optional(string)
   }))
 
   default = {}
@@ -67,6 +68,13 @@ DESC
     identity_type          = optional(string)
     identity_ids           = optional(list(string))
     not_scopes             = optional(list(string))
+    location               = optional(string)
   }))
   default = {}
+}
+
+variable "default_identity_location" {
+  description = "Default Azure location to use for policy assignments when an identity is assigned and per-assignment location is not provided."
+  type        = string
+  default     = "westus2"
 }

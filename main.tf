@@ -24,6 +24,7 @@ resource "azurerm_management_group_policy_assignment" "custom_mg" {
   description          = each.value.description
   parameters           = each.value.parameters
   not_scopes           = try(each.value.not_scopes, null)
+  location             = each.value.identity_type == null ? null : coalesce(try(each.value.location, null), var.default_identity_location)
   dynamic "identity" {
     for_each = each.value.identity_type == null ? [] : [1]
     content {
@@ -49,6 +50,7 @@ resource "azurerm_subscription_policy_assignment" "custom_sub" {
   description          = each.value.description
   parameters           = each.value.parameters
   not_scopes           = try(each.value.not_scopes, null)
+  location             = each.value.identity_type == null ? null : coalesce(try(each.value.location, null), var.default_identity_location)
   dynamic "identity" {
     for_each = each.value.identity_type == null ? [] : [1]
     content {
@@ -74,6 +76,7 @@ resource "azurerm_management_group_policy_assignment" "builtin_mg" {
   description          = each.value.description
   parameters           = each.value.parameters
   not_scopes           = try(each.value.not_scopes, null)
+  location             = each.value.identity_type == null ? null : coalesce(try(each.value.location, null), var.default_identity_location)
   dynamic "identity" {
     for_each = each.value.identity_type == null ? [] : [1]
     content {
@@ -99,6 +102,7 @@ resource "azurerm_subscription_policy_assignment" "builtin_sub" {
   description          = each.value.description
   parameters           = each.value.parameters
   not_scopes           = try(each.value.not_scopes, null)
+  location             = each.value.identity_type == null ? null : coalesce(try(each.value.location, null), var.default_identity_location)
   dynamic "identity" {
     for_each = each.value.identity_type == null ? [] : [1]
     content {
