@@ -15,8 +15,9 @@ output "custom_policy_assignment_ids" {
 }
 
 output "custom_policy_definition_ids" {
-  value = {
-    for k, v in azurerm_policy_definition.custom : k => v.id
-  }
+  value = merge(
+    { for k, v in azurerm_policy_definition.custom_mg : k => v.id },
+    { for k, v in azurerm_policy_definition.custom_sub : k => v.id }
+  )
   description = "Map of custom policy names to their definition resource IDs."
 }
