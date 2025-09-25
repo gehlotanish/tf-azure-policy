@@ -24,6 +24,8 @@ DESC
     description            = string
     parameters             = any
     non_compliance_message = string
+    identity_type          = optional(string)
+    identity_ids           = optional(list(string))
   }))
 
   default = {}
@@ -61,6 +63,8 @@ DESC
     metadata               = string
     parameters             = any
     non_compliance_message = string
+    identity_type          = optional(string)
+    identity_ids           = optional(list(string))
   }))
   default = {}
 }

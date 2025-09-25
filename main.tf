@@ -23,6 +23,13 @@ resource "azurerm_management_group_policy_assignment" "custom_mg" {
   display_name         = each.value.display_name
   description          = each.value.description
   parameters           = each.value.parameters
+  dynamic "identity" {
+    for_each = each.value.identity_type == null ? [] : [1]
+    content {
+      type         = each.value.identity_type
+      identity_ids = each.value.identity_type == "UserAssigned" ? try(each.value.identity_ids, null) : null
+    }
+  }
   non_compliance_message {
     content = each.value.non_compliance_message
   }
@@ -40,6 +47,13 @@ resource "azurerm_subscription_policy_assignment" "custom_sub" {
   display_name         = each.value.display_name
   description          = each.value.description
   parameters           = each.value.parameters
+  dynamic "identity" {
+    for_each = each.value.identity_type == null ? [] : [1]
+    content {
+      type         = each.value.identity_type
+      identity_ids = each.value.identity_type == "UserAssigned" ? try(each.value.identity_ids, null) : null
+    }
+  }
   non_compliance_message {
     content = each.value.non_compliance_message
   }
@@ -57,6 +71,13 @@ resource "azurerm_management_group_policy_assignment" "builtin_mg" {
   display_name         = each.value.display_name
   description          = each.value.description
   parameters           = each.value.parameters
+  dynamic "identity" {
+    for_each = each.value.identity_type == null ? [] : [1]
+    content {
+      type         = each.value.identity_type
+      identity_ids = each.value.identity_type == "UserAssigned" ? try(each.value.identity_ids, null) : null
+    }
+  }
   non_compliance_message {
     content = each.value.non_compliance_message
   }
@@ -74,6 +95,13 @@ resource "azurerm_subscription_policy_assignment" "builtin_sub" {
   display_name         = each.value.display_name
   description          = each.value.description
   parameters           = each.value.parameters
+  dynamic "identity" {
+    for_each = each.value.identity_type == null ? [] : [1]
+    content {
+      type         = each.value.identity_type
+      identity_ids = each.value.identity_type == "UserAssigned" ? try(each.value.identity_ids, null) : null
+    }
+  }
   non_compliance_message {
     content = each.value.non_compliance_message
   }
