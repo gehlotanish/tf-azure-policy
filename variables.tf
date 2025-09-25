@@ -26,6 +26,7 @@ DESC
     non_compliance_message = string
     identity_type          = optional(string)
     identity_ids           = optional(list(string))
+    not_scopes             = optional(list(string))
   }))
 
   default = {}
@@ -65,6 +66,7 @@ DESC
     non_compliance_message = string
     identity_type          = optional(string)
     identity_ids           = optional(list(string))
+    not_scopes             = optional(list(string))
   }))
   default = {}
 }

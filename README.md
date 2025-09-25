@@ -19,8 +19,8 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_builtin_policies"></a> [builtin\_policies](#input\_builtin\_policies) | Map of built-in policy assignments to apply at either the subscription or management group level.<br/><br/>Key: Built-in policy definition name.<br/><br/>Each object must include:<br/>- policy\_name: The actual name of the policy definition in Azure.<br/>- assignment\_name: Unique name for the policy assignment.<br/>- scope\_type: "subscription" or "management\_group".<br/>- scope\_name: The display name of the target scope (as shown in the Azure Portal).<br/>- display\_name: Friendly display name for the policy assignment.<br/>- description: Description of the policy assignment.<br/>- parameters: Optional parameters for the policy definition (can be `null`).<br/>- non\_compliance\_message: Message to display when the policy is non-compliant. | <pre>map(object({<br/>    policy_name            = string<br/>    assignment_name        = string<br/>    scope_type             = string<br/>    scope_name             = string<br/>    display_name           = string<br/>    description            = string<br/>    parameters             = any<br/>    non_compliance_message = string<br/>    identity_type          = optional(string)<br/>    identity_ids           = optional(list(string))<br/>  }))</pre> | `{}` | no |
-| <a name="input_custom_policies"></a> [custom\_policies](#input\_custom\_policies) | Map of custom policy definitions and their assignments.<br/><br/>Key: Custom policy definition name.<br/><br/>Each object must include:<br/>- name: The actual name of the policy definition in Azure.<br/>- mode: "All", "Indexed", or another supported Azure policy mode.<br/>- assignment\_name: Unique name for the policy assignment.<br/>- scope\_type: "subscription" or "management\_group".<br/>- scope\_name: The display name of the target scope (as shown in the Azure Portal).<br/>- display\_name: Friendly display name for the policy assignment.<br/>- description: Description of the policy assignment.<br/>- policy\_rule: JSON-encoded string representing the policy rule.<br/>- metadata: JSON-encoded string representing policy metadata.<br/>- parameters: Optional parameters for the policy definition (can be `null`).<br/>- non\_compliance\_message: Message to display when the policy is non-compliant. | <pre>map(object({<br/>    name                   = string<br/>    mode                   = string<br/>    assignment_name        = string<br/>    scope_type             = string<br/>    scope_name             = string<br/>    display_name           = string<br/>    description            = string<br/>    policy_rule            = string<br/>    metadata               = string<br/>    parameters             = any<br/>    non_compliance_message = string<br/>    identity_type          = optional(string)<br/>    identity_ids           = optional(list(string))<br/>  }))</pre> | `{}` | no |  
+| <a name="input_builtin_policies"></a> [builtin\_policies](#input\_builtin\_policies) | Map of built-in policy assignments to apply at either the subscription or management group level.<br/><br/>Key: Built-in policy definition name.<br/><br/>Each object must include:<br/>- policy\_name: The actual name of the policy definition in Azure.<br/>- assignment\_name: Unique name for the policy assignment.<br/>- scope\_type: "subscription" or "management\_group".<br/>- scope\_name: The display name of the target scope (as shown in the Azure Portal).<br/>- display\_name: Friendly display name for the policy assignment.<br/>- description: Description of the policy assignment.<br/>- parameters: Optional parameters for the policy definition (can be `null`).<br/>- non\_compliance\_message: Message to display when the policy is non-compliant. | <pre>map(object({<br/>    policy_name            = string<br/>    assignment_name        = string<br/>    scope_type             = string<br/>    scope_name             = string<br/>    display_name           = string<br/>    description            = string<br/>    parameters             = any<br/>    non_compliance_message = string<br/>    identity_type          = optional(string)<br/>    identity_ids           = optional(list(string))<br/>    not_scopes             = optional(list(string))<br/>  }))</pre> | `{}` | no |
+| <a name="input_custom_policies"></a> [custom\_policies](#input\_custom\_policies) | Map of custom policy definitions and their assignments.<br/><br/>Key: Custom policy definition name.<br/><br/>Each object must include:<br/>- name: The actual name of the policy definition in Azure.<br/>- mode: "All", "Indexed", or another supported Azure policy mode.<br/>- assignment\_name: Unique name for the policy assignment.<br/>- scope\_type: "subscription" or "management\_group".<br/>- scope\_name: The display name of the target scope (as shown in the Azure Portal).<br/>- display\_name: Friendly display name for the policy assignment.<br/>- description: Description of the policy assignment.<br/>- policy\_rule: JSON-encoded string representing the policy rule.<br/>- metadata: JSON-encoded string representing policy metadata.<br/>- parameters: Optional parameters for the policy definition (can be `null`).<br/>- non\_compliance\_message: Message to display when the policy is non-compliant. | <pre>map(object({<br/>    name                   = string<br/>    mode                   = string<br/>    assignment_name        = string<br/>    scope_type             = string<br/>    scope_name             = string<br/>    display_name           = string<br/>    description            = string<br/>    policy_rule            = string<br/>    metadata               = string<br/>    parameters             = any<br/>    non_compliance_message = string<br/>    identity_type          = optional(string)<br/>    identity_ids           = optional(list(string))<br/>    not_scopes             = optional(list(string))<br/>  }))</pre> | `{}` | no |  
 ## Outputs
 
 | Name | Description |
@@ -46,6 +46,16 @@ custom_policies = {
     metadata               = file("${path.module}/policies/deny_public_ip.metadata.json")
     parameters             = jsonencode({})
     non_compliance_message = "Creation of public IP addresses is not allowed."
+    # Optional: assign identity to the policy assignment
+    # identity_type = "SystemAssigned"
+    # or for user-assigned identity
+    # identity_type = "UserAssigned"
+    # identity_ids  = ["/subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/<uaiName>"]
+    # Optional: exclude scopes from assignment evaluation
+    # not_scopes = [
+    #   "/subscriptions/<subId>/resourceGroups/rg-exempt",
+    #   "/subscriptions/<subId>/resourceGroups/rg-legacy"
+    # ]
   }
 
   enforce_environment_tag = {
@@ -60,6 +70,7 @@ custom_policies = {
     metadata               = file("${path.module}/policies/enforce_environment_tag.metadata.json")
     parameters             = jsonencode({})
     non_compliance_message = "All resources must include the 'Environment' tag."
+    # Optional examples for identity and not_scopes as above
   }
 }
 
@@ -77,6 +88,11 @@ builtin_policies = {
       }
     })
     non_compliance_message = "Only 'eastus' and 'centralus' are allowed."
+    # Optional: identity and not_scopes
+    # identity_type = "SystemAssigned"
+    # not_scopes    = [
+    #   "/subscriptions/<subId>/resourceGroups/rg-exempt"
+    # ]
   }
 
   audit-vm-no-antimalware = {
@@ -88,6 +104,8 @@ builtin_policies = {
     description            = "Audits VMs that do not have antimalware installed."
     parameters             = jsonencode({})
     non_compliance_message = "Ensure all VMs have antimalware installed."
+    # identity_type = "UserAssigned"
+    # identity_ids  = ["/subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/<uaiName>"]
   }
 }
 ```

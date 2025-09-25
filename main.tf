@@ -23,6 +23,7 @@ resource "azurerm_management_group_policy_assignment" "custom_mg" {
   display_name         = each.value.display_name
   description          = each.value.description
   parameters           = each.value.parameters
+  not_scopes           = try(each.value.not_scopes, null)
   dynamic "identity" {
     for_each = each.value.identity_type == null ? [] : [1]
     content {
@@ -47,6 +48,7 @@ resource "azurerm_subscription_policy_assignment" "custom_sub" {
   display_name         = each.value.display_name
   description          = each.value.description
   parameters           = each.value.parameters
+  not_scopes           = try(each.value.not_scopes, null)
   dynamic "identity" {
     for_each = each.value.identity_type == null ? [] : [1]
     content {
@@ -71,6 +73,7 @@ resource "azurerm_management_group_policy_assignment" "builtin_mg" {
   display_name         = each.value.display_name
   description          = each.value.description
   parameters           = each.value.parameters
+  not_scopes           = try(each.value.not_scopes, null)
   dynamic "identity" {
     for_each = each.value.identity_type == null ? [] : [1]
     content {
@@ -95,6 +98,7 @@ resource "azurerm_subscription_policy_assignment" "builtin_sub" {
   display_name         = each.value.display_name
   description          = each.value.description
   parameters           = each.value.parameters
+  not_scopes           = try(each.value.not_scopes, null)
   dynamic "identity" {
     for_each = each.value.identity_type == null ? [] : [1]
     content {
