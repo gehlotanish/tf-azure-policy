@@ -7,7 +7,7 @@ locals {
 
 locals {
   mg_names = distinct([
-    for v in merge(var.builtin_policies, var.custom_policies) :
+    for v in merge(var.builtin_policies, var.custom_policies, var.policy_initiatives) :
     v.scope_name if v.scope_type == "management_group"
   ])
 }
