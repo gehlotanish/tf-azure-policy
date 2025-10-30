@@ -43,7 +43,7 @@ resource "azurerm_management_group_policy_assignment" "custom_mg" {
   management_group_id  = data.azurerm_management_group.mg[each.value.scope_name].id
   display_name         = each.value.display_name
   description          = each.value.description
-  parameters           = try(each.value.parameters, null)
+  parameters           = try(each.value.assignment_parameters, null)
   not_scopes           = try(each.value.not_scopes, null)
   location             = each.value.identity_type == null ? null : coalesce(try(each.value.location, null), var.default_identity_location)
   dynamic "identity" {
@@ -69,7 +69,7 @@ resource "azurerm_subscription_policy_assignment" "custom_sub" {
   subscription_id      = local.subscriptions[each.value.scope_name]
   display_name         = each.value.display_name
   description          = each.value.description
-  parameters           = try(each.value.parameters, null)
+  parameters           = try(each.value.assignment_parameters, null)
   not_scopes           = try(each.value.not_scopes, null)
   location             = each.value.identity_type == null ? null : coalesce(try(each.value.location, null), var.default_identity_location)
   dynamic "identity" {
@@ -95,7 +95,7 @@ resource "azurerm_management_group_policy_assignment" "builtin_mg" {
   management_group_id  = data.azurerm_management_group.mg[each.value.scope_name].id
   display_name         = each.value.display_name
   description          = each.value.description
-  parameters           = try(each.value.parameters, null)
+  parameters           = try(each.value.assignment_parameters, null)
   not_scopes           = try(each.value.not_scopes, null)
   location             = each.value.identity_type == null ? null : coalesce(try(each.value.location, null), var.default_identity_location)
   dynamic "identity" {
@@ -121,7 +121,7 @@ resource "azurerm_subscription_policy_assignment" "builtin_sub" {
   subscription_id      = local.subscriptions[each.value.scope_name]
   display_name         = each.value.display_name
   description          = each.value.description
-  parameters           = try(each.value.parameters, null)
+  parameters           = try(each.value.assignment_parameters, null)
   not_scopes           = try(each.value.not_scopes, null)
   location             = each.value.identity_type == null ? null : coalesce(try(each.value.location, null), var.default_identity_location)
   dynamic "identity" {
@@ -194,7 +194,7 @@ resource "azurerm_management_group_policy_assignment" "initiative_mg" {
   management_group_id  = data.azurerm_management_group.mg[each.value.scope_name].id
   display_name         = each.value.display_name
   description          = each.value.description
-  parameters           = try(each.value.parameters, null)
+  parameters           = try(each.value.assignment_parameters, null)
   not_scopes           = try(each.value.not_scopes, null)
   location             = each.value.identity_type == null ? null : coalesce(try(each.value.location, null), var.default_identity_location)
   dynamic "identity" {
@@ -220,7 +220,7 @@ resource "azurerm_subscription_policy_assignment" "initiative_sub" {
   subscription_id      = local.subscriptions[each.value.scope_name]
   display_name         = each.value.display_name
   description          = each.value.description
-  parameters           = try(each.value.parameters, null)
+  parameters           = try(each.value.assignment_parameters, null)
   not_scopes           = try(each.value.not_scopes, null)
   location             = each.value.identity_type == null ? null : coalesce(try(each.value.location, null), var.default_identity_location)
   dynamic "identity" {

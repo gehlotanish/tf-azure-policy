@@ -23,6 +23,7 @@ DESC
     display_name           = string
     description            = string
     parameters             = optional(any)
+    assignment_parameters  = optional(any)
     non_compliance_message = string
     identity_type          = optional(string)
     identity_ids           = optional(list(string))
@@ -64,6 +65,7 @@ DESC
     policy_rule            = string
     metadata               = string
     parameters             = optional(any)
+    assignment_parameters  = optional(any)
     non_compliance_message = string
     identity_type          = optional(string)
     identity_ids           = optional(list(string))
@@ -101,6 +103,7 @@ DESC
     scope_type             = string
     scope_name             = string
     parameters             = optional(any)
+    assignment_parameters  = optional(any)
     non_compliance_message = string
     identity_type          = optional(string)
     identity_ids           = optional(list(string))
