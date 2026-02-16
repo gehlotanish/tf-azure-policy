@@ -1,0 +1,31 @@
+{
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.KeyVault/vaults"
+        },
+        {
+          "anyOf": [
+            {
+              "field": "tags['owner']",
+              "exists": "false"
+            },
+            {
+                "anyOf": [
+                  { "field": "tags['owner']", "notContains": "@" },
+                  { "field": "tags['owner']", "notContains": "." }
+                ]
+              }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "deny"
+    }
+  }
+  
+}

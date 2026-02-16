@@ -11,7 +11,7 @@ resource "azurerm_policy_definition" "custom_mg" {
   description         = each.value.description
   policy_rule         = each.value.policy_rule
   metadata            = each.value.metadata
-  parameters          = try(each.value.parameters, null)
+  parameters          = try(each.value.parameters, null) == null || try(each.value.parameters, null) == "{}" || try(each.value.parameters, null) == "null" ? null : each.value.parameters
   management_group_id = data.azurerm_management_group.mg[each.value.scope_name].id
 }
 
@@ -28,7 +28,7 @@ resource "azurerm_policy_definition" "custom_sub" {
   description  = each.value.description
   policy_rule  = each.value.policy_rule
   metadata     = each.value.metadata
-  parameters   = try(each.value.parameters, null)
+  parameters   = try(each.value.parameters, null) == null || try(each.value.parameters, null) == "{}" || try(each.value.parameters, null) == "null" ? null : each.value.parameters
 }
 
 

@@ -1,0 +1,21 @@
+{
+  "description": "Deny creation or update of subnets without a Network Security Group.",
+  "displayName": "Deny-Subnet-Without-NSG",
+  "mode": "All",
+  "parameters": null,
+  "policyRule": {
+    "if": {
+      "allOf": [
+        { "field": "type", "equals": "Microsoft.Network/virtualNetworks/subnets" },
+        { "field": "name", "notLike": "*GatewaySubnet" },
+        { "field": "name", "notLike": "*AzureFirewallSubnet" },
+        { "field": "name", "notLike": "*AzureBastionSubnet" },
+        { "field": "Microsoft.Network/virtualNetworks/subnets/networkSecurityGroup.id", "exists": "false" }
+      ]
+    },
+
+    "then": { 
+      "effect": "Deny" 
+    }
+  }
+}

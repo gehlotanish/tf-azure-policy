@@ -1,0 +1,51 @@
+{
+  "displayName": "Inherit tag from resource group if missing (exclude RGs)",
+  "description": "Inherits a specified tag from the resource group to resources only when the tag is missing. Resource groups are excluded.",
+  "mode": "Indexed",
+  "metadata": {
+    "category": "Tags",
+    "version": "1.0.0"
+  },
+  "parameters": {
+    "tagName": {
+      "type": "String",
+      "metadata": {
+        "displayName": "Tag Name",
+        "description": "Name of the tag to inherit from the resource group (for example: team, owner)"
+      }
+    }
+  },
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "notEquals": "Microsoft.Resources/subscriptions/resourceGroups"
+        },
+        {
+          "field": "[concat('tags[', parameters('tagName'), ']')]",
+          "exists": "false"
+        },
+        {
+          "value": "[resourceGroup().tags[parameters('tagName')]]",
+          "notEquals": ""
+        }
+      ]
+    },
+    "then": {
+      "effect": "modify",
+      "details": {
+        "roleDefinitionIds": [
+          "/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+        ],
+        "operations": [
+          {
+            "operation": "add",
+            "field": "[concat('tags[', parameters('tagName'), ']')]",
+            "value": "[resourceGroup().tags[parameters('tagName')]]"
+          }
+        ]
+      }
+    }
+  }
+}

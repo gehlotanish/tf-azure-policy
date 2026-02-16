@@ -1,0 +1,46 @@
+{
+  "description": "Enforce minimum TLS version 1.2 for API Management services",
+  "displayName": "API Management services should use TLS version 1.2+",
+  "mode": "All",
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.ApiManagement/service"
+        },
+        {
+          "anyOf": [
+            {
+              "value": "[indexof(toLower(string(field('Microsoft.ApiManagement/service/customProperties'))), '\"microsoft.windowsazure.apimanagement.gateway.security.protocols.tls10\":\"true\"')]",
+              "greaterOrEquals": 0
+            },
+            {
+              "value": "[indexof(toLower(string(field('Microsoft.ApiManagement/service/customProperties'))), '\"microsoft.windowsazure.apimanagement.gateway.security.protocols.tls10\":true')]",
+              "greaterOrEquals": 0
+            },
+            {
+              "value": "[indexof(toLower(string(field('Microsoft.ApiManagement/service/customProperties'))), '\"microsoft.windowsazure.apimanagement.gateway.security.protocols.tls11\":\"true\"')]",
+              "greaterOrEquals": 0
+            },
+            {
+              "value": "[indexof(toLower(string(field('Microsoft.ApiManagement/service/customProperties'))), '\"microsoft.windowsazure.apimanagement.gateway.security.protocols.tls11\":true')]",
+              "greaterOrEquals": 0
+            },
+            {
+              "value": "[indexof(toLower(string(field('Microsoft.ApiManagement/service/customProperties'))), '\"microsoft.windowsazure.apimanagement.gateway.security.backend.protocols.tls10\":true')]",
+              "greaterOrEquals": 0
+            },
+            {
+              "value": "[indexof(toLower(string(field('Microsoft.ApiManagement/service/customProperties'))), '\"microsoft.windowsazure.apimanagement.gateway.security.backend.protocols.tls11\":true')]",
+              "greaterOrEquals": 0
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "Deny"
+    }
+  }
+}

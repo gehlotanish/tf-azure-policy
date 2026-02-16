@@ -1,0 +1,43 @@
+{
+  "displayName": "Audit Built-in role assignments",
+  "description": "Audit any role assignments that grant the built-in Owner role. Use this policy to detect principals with Owner privileges.",
+  "mode": "All",
+  "metadata": {
+    "version": "1.0.0",
+    "category": "Identity"
+  },
+  "parameters": {},
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Authorization/roleAssignments"
+        },
+        {
+          "anyOf": [
+            {
+              "field": "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+              "like": "*/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+            },
+            {
+              "field": "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+              "like": "*/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+            },
+            {
+              "field": "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+              "like": "*/roleDefinitions/f1a07417-d97a-45cb-824c-7a7467783830"
+            },
+            {
+              "field": "Microsoft.Authorization/roleAssignments/roleDefinitionId",
+              "like": "*/roleDefinitions/fb1c8493-542b-48eb-b624-b4c8fea62acd"
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "audit"
+    }
+  }
+}

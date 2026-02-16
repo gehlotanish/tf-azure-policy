@@ -1,0 +1,35 @@
+{
+  "description": "Deny creation or update of storage accounts with public network access enabled unless security risk is accepted.",
+  "displayName": "Deny-StorageAccount-With-PublicNetworkAccess-Unless-Risk-Accepted",
+  "mode": "All",
+  "parameters": null,
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Storage/storageAccounts"
+        },
+        {
+          "field": "Microsoft.Storage/storageAccounts/publicNetworkAccess",
+          "equals": "Enabled"
+        },
+        {
+          "anyOf": [
+            {
+              "field": "tags['securityRiskAccepted']",
+              "notEquals": "true"
+            },
+            {
+              "field": "tags['securityRiskAccepted']",
+              "exists": "false"
+            }
+          ]
+        }
+      ]
+    },
+    "then": {
+      "effect": "Deny"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "description": "This policy denies the creation of Public DNS zones to enforce the use of Private DNS zones only.",
+  "displayName": "Deny-PublicDNSZone-Creation",
+  "mode": "All",
+  "parameters": null,
+  "policyRule": {
+    "if": {
+      "allOf": [
+        {
+          "field": "type",
+          "equals": "Microsoft.Network/dnsZones"
+        },
+        {
+          "field": "Microsoft.Network/dnsZones/zoneType",
+          "equals": "Public"
+        }
+      ]
+    },
+    "then": {
+      "effect": "Deny"
+    }
+  }
+}

@@ -8,6 +8,9 @@
                     "equals": "Microsoft.Resources/subscriptions"
                 }
             ]
+        },
+        "then": {
+            "effect": "Deny"
         }
     }
 }
