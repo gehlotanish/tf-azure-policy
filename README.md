@@ -37,165 +37,67 @@ No modules.
 ## Usage
 
 ```tf
-custom_policies = {
-  deny_public_ip = {
-    name                   = "deny-public-ip"
-    mode                   = "All"
-    assignment_name        = "deny-public-ip-assignment"
-    scope_type             = "management_group"
-    scope_name             = "mg-platform"
-    display_name           = "Deny Public IP"
-    description            = "Denies creation of public IP addresses."
-    policy_rule            = file("${path.module}/policies/deny_public_ip.json")
-    metadata               = file("${path.module}/policies/deny_public_ip.metadata.json")
-    parameters             = jsonencode({})
-    non_compliance_message = "Creation of public IP addresses is not allowed."
-    # Optional: assign identity to the policy assignment
-    # identity_type = "SystemAssigned"
-    # or for user-assigned identity
-    # identity_type = "UserAssigned"
-    # identity_ids  = ["/subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/<uaiName>"]
-    # Optional: exclude scopes from assignment evaluation
-    # not_scopes = [
-    #   "/subscriptions/<subId>/resourceGroups/rg-exempt",
-    #   "/subscriptions/<subId>/resourceGroups/rg-legacy"
-    # ]
+module "azure_policy" {
+  source = "path/to/tf-azure-policy"
+
+  builtin_policies = {
+    "allowed-locations" = {
+      policy_name            = "Allowed locations"
+      assignment_name        = "allowed-loc-assign"
+      scope_type             = "management_group"
+      scope_name             = "group1"
+      display_name           = "Allowed Locations"
+      description            = "Restricts where resources can be deployed."
+      assignment_parameters  = jsonencode({
+        listOfAllowedLocations = {
+          value = ["eastus", "centralus"]
+        }
+      })
+      non_compliance_message = "Only eastus and centralus are allowed."
+    }
   }
 
-  enforce_environment_tag = {
-    name                   = "enforce-environment-tag"
-    mode                   = "All"
-    assignment_name        = "enforce-environment-tag-assignment"
-    scope_type             = "subscription"
-    scope_name             = "dev-subscription"
-    display_name           = "Enforce Environment Tag"
-    description            = "Requires 'Environment' tag on all resources."
-    policy_rule            = file("${path.module}/policies/enforce_environment_tag.json")
-    metadata               = file("${path.module}/policies/enforce_environment_tag.metadata.json")
-    parameters             = jsonencode({})
-    non_compliance_message = "All resources must include the 'Environment' tag."
-    # Optional examples for identity and not_scopes as above
-  }
-}
+  custom_policies = {
+    "deny-subnet-without-nsg" = {
+      name                   = "deny-subnet-without-nsg"
+      mode                   = jsondecode(file("${path.module}/policies/deny-subnet-without-nsg.json")).mode
+      assignment_name        = "deny-subnet-no-nsg"
+      scope_type             = "management_group"
+      scope_name             = "group1"
+      display_name           = jsondecode(file("${path.module}/policies/deny-subnet-without-nsg.json")).displayName
+      description            = jsondecode(file("${path.module}/policies/deny-subnet-without-nsg.json")).description
+      policy_rule            = jsonencode(jsondecode(file("${path.module}/policies/deny-subnet-without-nsg.json")).policyRule)
+      metadata               = jsonencode({ category = "Network", version = "1.0.0" })
+      non_compliance_message = "Subnets must have an NSG attached."
+    }
 
-builtin_policies = {
-  allowed-locations = {
-    policy_name            = "Allowed locations"
-    assignment_name        = "allowed-locations-assignment"
-    scope_type             = "subscription"
-    scope_name             = "dev-subscription"
-    display_name           = "Allowed Locations"
-    description            = "Restricts the locations where resources can be deployed."
-    parameters             = jsonencode({
-      listOfAllowedLocations = {
-        value = ["eastus", "centralus"]
-      }
-    })
-    non_compliance_message = "Only 'eastus' and 'centralus' are allowed."
-    # Optional: identity and not_scopes
-    # identity_type = "SystemAssigned"
-    # not_scopes    = [
-    #   "/subscriptions/<subId>/resourceGroups/rg-exempt"
-    # ]
-  }
-
-  audit-vm-no-antimalware = {
-    policy_name            = "Audit VMs without antimalware"
-    assignment_name        = "audit-vm-no-antimalware-assignment"
-    scope_type             = "management_group"
-    scope_name             = "mg-platform"
-    display_name           = "Audit VMs Without Antimalware"
-    description            = "Audits VMs that do not have antimalware installed."
-    parameters             = jsonencode({})
-    non_compliance_message = "Ensure all VMs have antimalware installed."
-    # identity_type = "UserAssigned"
-    # identity_ids  = ["/subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.ManagedIdentity/userAssignedIdentities/<uaiName>"]
-  }
-
-## Policy initiative
-
-```tf
-policy_initiatives = {
-  security_baseline = {
-    name                   = "Security-Baseline-Initiative"
-    display_name           = "Security Baseline Initiative"
-    description            = "A comprehensive security baseline initiative for Azure resources."
-    policy_type            = "Custom"
-    assignment_name        = "security-baseline"
-    scope_type             = "management_group"
-    scope_name             = "mg-platform"
-    parameters             = jsonencode({
-      effect = {
-        type = "String"
-        value = "Audit"
-      }
-      allowedLocations = {
-        type = "Array"
-        value = ["eastus", "westus2"]
-      }
-    })
-    non_compliance_message = "Resources must comply with security baseline requirements."
-    identity_type          = "SystemAssigned"
-    policy_definitions = [
-      {
-        policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/1c6e92c9-99f0-4e55-9cf2-0c99dcf3acec"
-        parameter_values = jsonencode({
-          effect = {
-            type = "String"
-            value = "Audit"
-          }
-        })
-      },
-      {
-        policy_definition_id = "/providers/Microsoft.Authorization/policyDefinitions/e765b5de-1225-4ba3-bd56-1ac6695af988"
-        parameter_values = jsonencode({
-          listOfAllowedLocations = {
-            type = "Array"
-            value = ["eastus", "westus2"]
-          }
-        })
-      }
-    ]
+    # Example modify policy: requires assignment identity + assignment parameters
+    "inherit-tag-from-rg-if-missing" = {
+      name                   = "inherit-tag-from-rg-if-missing"
+      mode                   = jsondecode(file("${path.module}/policies/inherit-tag-from-rg-if-missing.json")).mode
+      assignment_name        = "inherit-tag-from-rg"
+      scope_type             = "management_group"
+      scope_name             = "group1"
+      display_name           = jsondecode(file("${path.module}/policies/inherit-tag-from-rg-if-missing.json")).displayName
+      description            = jsondecode(file("${path.module}/policies/inherit-tag-from-rg-if-missing.json")).description
+      policy_rule            = jsonencode(jsondecode(file("${path.module}/policies/inherit-tag-from-rg-if-missing.json")).policyRule)
+      metadata               = jsonencode(jsondecode(file("${path.module}/policies/inherit-tag-from-rg-if-missing.json")).metadata)
+      parameters             = jsonencode(jsondecode(file("${path.module}/policies/inherit-tag-from-rg-if-missing.json")).parameters)
+      assignment_parameters  = jsonencode({
+        tagName = {
+          value = "owner"
+        }
+      })
+      identity_type          = "SystemAssigned"
+      non_compliance_message = "Missing tags are inherited from the resource group."
+    }
   }
 }
 ```
 
-### Policy Initiative Features
+### Notes
 
-This example demonstrates how to deploy an Azure Policy Initiative (Policy Set) that:
-
-1. **Groups Multiple Policies**: Combines related policies into a single initiative
-2. **Parameter Management**: Handles both initiative-level and policy-level parameters
-3. **Flexible Assignment**: Can be assigned to management groups or subscriptions
-4. **Identity Support**: Supports both system-assigned and user-assigned identities
-
-### Key Components
-
-- **`name`**: The policy initiative name in Azure
-- **`display_name`**: User-friendly display name
-- **`description`**: Detailed description of the initiative
-- **`policy_type`**: "Custom" for custom initiatives, "BuiltIn" for built-in ones
-- **`assignment_name`**: Unique name for the policy assignment (max 24 characters)
-- **`scope_type`**: "management_group" or "subscription"
-- **`scope_name`**: Target scope name
-- **`parameters`**: Initiative-level parameters (optional)
-- **`non_compliance_message`**: Message shown when policy is non-compliant
-- **`identity_type`**: "SystemAssigned" or "UserAssigned" for managed identity
-- **`policy_definitions`**: List of policy definitions with their parameter values
-
-### Parameter Structure
-
-Each parameter in `parameter_values` must include:
-- **`type`**: "String" or "Array" depending on the parameter type
-- **`value`**: The actual parameter value
-
-### Usage Notes
-
-1. **Assignment Names**: Must be 24 characters or less
-2. **Parameter Types**: Use "String" for single values, "Array" for lists
-3. **Policy IDs**: Use full Azure policy definition IDs
-4. **Scope Targeting**: Ensure the target scope exists before assignment
-5. **Identity Requirements**: Some policies require managed identities for remediation
-
-}
-```
+- Use `assignment_parameters` for policy assignment input values.
+- For custom definitions, pass `policy_rule`, `metadata`, and optional `parameters` as JSON strings.
+- Use `identity_type = "SystemAssigned"` (or `UserAssigned`) when the policy effect needs an identity (for example, `modify`).
+- `scope_name` must match the management group display/name or subscription display name expected by this module lookups.
